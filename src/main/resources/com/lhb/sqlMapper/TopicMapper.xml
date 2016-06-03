@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lhb.mapper.TopicMapper">
+	<resultMap id="BaseResultMap" type="com.lhb.bean.Topic">
+		<id column="id" property="id" />
+		<result column="message" property="message" />
+	</resultMap>
+	<select id="selectOne" parameterType="Integer" resultMap="BaseResultMap">
+		select id, message from topic where id=#{id}
+	</select>
+
+</mapper>
