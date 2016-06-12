@@ -5,4 +5,5 @@ import com.lhb.generic.IGenericService;
 
 public interface IUserService extends IGenericService<User,Integer> {
 
+	public void testTrasaction();
 }

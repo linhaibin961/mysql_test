@@ -7,7 +7,10 @@
 		<result column="password" property="password" />
 	</resultMap>
 	<select id="selectOne" parameterType="Integer" resultMap="BaseResultMap">
-		select id, password, username from user where id=#{id}
+		select id, username, password from user where id=#{id}
 	</select>
 
+	<insert id="save" parameterType="com.lhb.bean.User">
+		insert into user(username,password) values(#{username},#{password})
+	</insert>
 </mapper>

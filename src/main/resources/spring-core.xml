@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.2.xsd"
        default-lazy-init="true">
 	<context:component-scan base-package="com.lhb">
 		<context:exclude-filter type="annotation"
@@ -41,6 +47,16 @@
 		<property name="filters" value="stat" />
 	</bean>
 	
+	<!-- 配置事物管理类 -->
+	<!-- 只要SqlSessionFactoryBean引用的数据源与DataSourceTransactionManager引用的数据源一致即可，否则事务管理会不起作用 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 开启注解式事务扫描 -->
+	<!-- <tx:annotation-driven transaction-manager="transactionManager" /> -->
+	
+	
     <!-- 缓存管理器 使用Ehcache实现 -->
     <!-- <bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
         <property name="configLocation" value="classpath:cache/ehcache.xml"/>
@@ -57,13 +73,25 @@
         <!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 -->
         <property name="typeAliasesPackage" value="com.lhb.bean" />
     </bean>
-    <bean id="sqlSessionMain" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg index="0" ref="sqlSessionFactory"/>
-    </bean>
 
     <!-- 自动扫描mapper接口-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.lhb.mapper" />
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
+    
+    <!-- tx标签来配置事务 开始 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+      
+    <aop:config>
+        <aop:pointcut id="interceptorPointCuts"
+            expression="execution(* com.lhb.service.impl.*.*(..))" />
+        <aop:advisor advice-ref="txAdvice"
+            pointcut-ref="interceptorPointCuts" />
+    </aop:config>
+    <!-- tx标签来配置事务 结束 -->
 </beans>

@@ -23,4 +23,15 @@ public class UserController {
 		hsr.setAttribute("list", "amdin");
 		return "user/list";
 	}
+	@RequestMapping("testTrasaction")
+	public String testTrasaction(HttpServletRequest hsr){
+		try {
+			userService.testTrasaction();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	System.out.println("###############");
+    	hsr.setAttribute("user","testTrasaction is success");
+		return "user/list";
+	}
 }
